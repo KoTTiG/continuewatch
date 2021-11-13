@@ -11,9 +11,11 @@ class MainActivity : AppCompatActivity() {
 
     var backgroundThread = Thread {
         while (true) {
-            Thread.sleep(1000)
-            textSecondsElapsed.post {
-                textSecondsElapsed.text = if (stop) "Seconds elapsed:${secondsElapsed} " else "Seconds elapsed:${secondsElapsed++} "
+            if (!stop) {
+                Thread.sleep(1000)
+                textSecondsElapsed.post {
+                    textSecondsElapsed.text = getString(R.string.seconds_elapsed, secondsElapsed++)
+                }
             }
         }
     }
@@ -37,18 +39,13 @@ class MainActivity : AppCompatActivity() {
         super.onSaveInstanceState(outState)
     }
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        savedInstanceState.getInt("seconds_elapsed")
-    }
-
-    override fun onResume() {
-        stop = false
-        super.onResume()
-    }
-
-    override fun onPause() {
+    override fun onStart() {
         stop = true
-        super.onPause()
+        super.onStart()
+    }
+
+    override fun onStop() {
+        stop = false
+        super.onStop()
     }
 }
